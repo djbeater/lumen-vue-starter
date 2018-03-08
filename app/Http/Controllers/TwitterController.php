@@ -17,7 +17,12 @@ class TwitterController extends Controller
      */
     public function twitter(Request $request)
     {
-        $connection = new TwitterOAuth(env('TWITTER_CONSUMER_KEY'), env('TWITTER_CONSUMER_SECRET'), env('TWITTER_ACCESS_TOKEN'), env('TWITTER_ACCESS_TOKEN_SECRET'));
+        $connection = new TwitterOAuth(
+            env('TWITTER_CONSUMER_KEY'),
+            env('TWITTER_CONSUMER_SECRET'),
+            env('TWITTER_ACCESS_TOKEN'),
+            env('TWITTER_ACCESS_TOKEN_SECRET')
+        );
         //$content = $connection->get("account/verify_credentials");
 
         $query = [
@@ -28,8 +33,8 @@ class TwitterController extends Controller
         $statuses = $connection->get("search/tweets", $query);
     	  //$data = Twitter::getUserTimeline(['count' => 10, 'format' => 'array']);
 
-        print_r($statuses);
-        exit;
+        //print_r($statuses);
+        //exit;
 
         $tweets = [];
         foreach($statuses->statuses as $status) {
