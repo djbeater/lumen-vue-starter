@@ -3,10 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-//use Thujohn\Twitter\Facades\Twitter;
-use File;
 use Abraham\TwitterOAuth\TwitterOAuth;
 use stdClass;
+use Carbon\Carbon;
 
 class TwitterController extends Controller
 {
@@ -15,7 +14,7 @@ class TwitterController extends Controller
      *
      * @return void
      */
-    public function twitter(Request $request)
+    public function fetch(Request $request)
     {
         $connection = new TwitterOAuth(
             env('TWITTER_CONSUMER_KEY'),
@@ -50,16 +49,24 @@ class TwitterController extends Controller
             $tweet->userImage = $status->user->profile_image_url_https;
             $tweet->userName = $status->user->screen_name;
             $tweet->user = $status->user->name;
-            $tweet->text = $status->text;
+
+            $text = preg_replace("/\p{L}*?".preg_quote('disconakts')."\p{L}*/ui", "<span class='highlight'>$0</span>", $status->text);
+
+            $tweet->text = $text;
             $tweet->image = $mediaUrl ? $mediaUrl : 'https://picsum.photos/600/600/?random&' . rand(1, 999);
             $tweet->socialIcon = 'https://www.seeklogo.net/wp-content/uploads/2015/11/twitter-logo.png';
-            $tweet->createdAt = $status->created_at;
+            $tweet->createdAt = Carbon::parse($status->created_at)->diffForHumans();
             $tweet->admin = false;
 
             $tweets[] = $tweet;
             $tweet = null;
         }
 
-        return response()->json($tweets);
+        $tweetsColl = collect($tweets);
+        $chunk = $tweetsColl->take(3);
+        //$chunk->all();
+        //dd($chunk->all());
+
+        return response()->json($chunk->all());
     }
 }

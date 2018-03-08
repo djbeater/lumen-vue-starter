@@ -23,7 +23,9 @@ Route::get('/key', function() {
 });
 */
 
-Route::get('twitter', 'TwitterController@twitter');
+Route::get('twitter', 'TwitterController@fetch');
+Route::get('instagram', 'InstagramController@fetch');
+Route::get('client', 'ClientController@control');
 //Route::post('tweet', ['as'=>'post.tweet','uses'=>'TwitterController@tweet']);
 
 $router->get('{path:.*}', function () {

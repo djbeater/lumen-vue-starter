@@ -8,7 +8,13 @@
         <div class="col-xs-6">
           <div class="pull-right mt-4 ml-4">
             <div><h2>Sekojošas mirkļbirkas tiks atspoguļotas</h2></div>
-            <div class="data-catcher">#disconakts #disconakts2018</div>
+            <div class="data-catcher"></div>
+          </div>
+        </div>
+
+        <div class="col-xs-12">
+          <div class="form-group">
+            <input type="text" class="form-control">
           </div>
         </div>
       </div>
@@ -24,6 +30,14 @@ import Navbar from '~/components/Navbar'
 
 export default {
   name: 'MainLayout',
+
+  /*
+  data() {
+    return {
+      hashtagCatcher: '#disconakts #disconakts2018',
+    }
+  },
+  */
 
   components: {
     Navbar
@@ -48,6 +62,11 @@ body {
 .data-catcher {
   font-size: 30px;
   color: #fff;
+  font-weight: bold;
+}
+
+.highlight {
+  color: blue;
   font-weight: bold;
 }
 
