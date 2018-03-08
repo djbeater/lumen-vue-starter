@@ -60,6 +60,8 @@ $app->singleton('mailer', function ($app) {
 
 $app->alias('mailer', Illuminate\Contracts\Mail\Mailer::class);
 
+//$app->alias('Twitter', Thujohn\Twitter\Facades\Twitter::class);
+
 /*
 |--------------------------------------------------------------------------
 | Register Middleware
@@ -97,6 +99,8 @@ $app->register(Illuminate\Auth\Passwords\PasswordResetServiceProvider::class);
 $app->register(Illuminate\Notifications\NotificationServiceProvider::class);
 $app->register(App\Providers\EventServiceProvider::class);
 // $app->register(App\Providers\AuthServiceProvider::class);
+//$app->register(Thujohn\Twitter\TwitterServiceProvider::class);
+//$app->register(Illuminate\Session\SessionServiceProvider::class);
 
 /*
 |--------------------------------------------------------------------------

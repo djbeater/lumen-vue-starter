@@ -16,7 +16,8 @@
         "albertcht/lumen-form-request": "^2.3",
         "albertcht/lumen-helpers": "^0.2",
         "illuminate/mail": "^5.5",
-        "illuminate/notifications": "^5.5"
+        "illuminate/notifications": "^5.5",
+        "abraham/twitteroauth": "^0.7.4"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

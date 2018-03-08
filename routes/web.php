@@ -17,6 +17,15 @@ $router->group(['prefix' => 'oauth'], function () use ($router) {
     $router->get('{driver}/callback', ['as' => 'oauth.callback', 'uses' => 'Auth\OAuthController@handleProviderCallback']);
 });
 
+/*
+Route::get('/key', function() {
+    return str_random(32);
+});
+*/
+
+Route::get('twitter', 'TwitterController@twitter');
+//Route::post('tweet', ['as'=>'post.tweet','uses'=>'TwitterController@tweet']);
+
 $router->get('{path:.*}', function () {
     return view('index');
 });
