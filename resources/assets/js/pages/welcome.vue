@@ -19,7 +19,6 @@
   -->
 
     <!--<div class="text-center">
-      <!--
       <div class="title mb-4">
         {{ title }}
       </div>
@@ -42,7 +41,7 @@
                   class="user-image rounded-circle"
                   :src="post.userImage"
                   >
-                  <span class="user-name">{{ post.user }}</span>
+                  <span class="name">{{ post.user }}</span>
                   <span class="username">{{ post.userName }}</span>
                   <span class="pull-right"><img :src="post.socialIcon" style="height: 50px;"></span>
               </div>
@@ -65,75 +64,73 @@
 <div class="row">
   <div class="card-group">
 
-  <div class="col-xs-6 col-sm-6 debugg">
-
-    <div v-for="post in posts" class="post col-xs-12">
-      <transition name="fade">
-      <div v-if="post.network == 'instagram'" class="card w-100">
-        <img class="card-img-top" :src="post.image" alt="Card image cap">
-        <div class="card-block">
-          <h5 class="card-title">
-            <div class="user-image-container ">
-              <div class="user-image-container-inner debugg">
-              </div>
-              <div class="username-container">
-                <img
-                  class="user-image rounded-circle"
-                  :src="post.userImage"
-                  >
-                  <span class="user-name">{{ post.user }}</span>
-                  <span class="username">{{ post.userName }}</span>
-                  <span class="pull-right"><img :src="post.socialIcon" style="height: 50px;"></span>
-              </div>
+    <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6 debugg">
+      <transition-group name="flip-list" tag="div">
+        <div v-for="post in posts.instagram" class="post col-xs-12" v-bind:key="post.id">
+          <div v-if="post.network == 'instagram'" class="card w-100">
+            <img class="card-img-top" :src="post.image" alt="Card image cap">
+            <div class="card-block">
+              <h5 class="card-title">
+                <div class="user-image-container ">
+                  <div class="user-image-container-inner">
+                  </div>
+                  <div class="username-container">
+                    <img
+                      class="user-image rounded-circle"
+                      :src="post.userImage"
+                      >
+                      <span class="name">{{ post.user }}</span>
+                      <span class="username">{{ post.userName }}</span>
+                      <span class="social-icon pull-right"><img :src="post.socialIcon"></span>
+                  </div>
+                </div>
+              </h5>
+              <p class="card-text">
+                <h1 v-if="post.admin" v-html="post.text"></h1>
+                <span v-else v-html="post.text"></span>
+              </p>
+              <p class="card-text">
+                <small>{{ post.createdAt }}</small>
+              </p>
             </div>
-          </h5>
-          <p class="card-text">
-            <h1 v-if="post.admin" v-html="post.text"></h1>
-            <span v-else v-html="post.text"></span>
-          </p>
-          <p class="card-text">
-            <small class="text-muted">{{ post.createdAt }}</small>
-          </p>
+          </div>
         </div>
-      </div>
-    </transition>
+      </transition-group>
     </div>
 
-  </div>
-
-  <div class="col-xs-6 col-sm-6 debugg">
-    <div v-for="post in posts" class="post col-xs-12">
-      <transition name="fade">
-      <div v-if="post.network == 'twitter'" class="card w-100">
-        <img class="card-img-top" :src="post.image" alt="Card image cap">
-        <div class="card-block">
-          <h5 class="card-title">
-            <div class="user-image-container ">
-              <div class="user-image-container-inner debugg">
-              </div>
-              <div class="username-container">
-                <img
-                  class="user-image rounded-circle"
-                  :src="post.userImage"
-                  >
-                  <span class="user-name">{{ post.user }}</span>
-                  <span class="username">{{ post.userName }}</span>
-                  <span class="pull-right"><img :src="post.socialIcon" style="height: 50px;"></span>
-              </div>
+    <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6 debugg">
+      <transition-group name="flip-list" tag="div">
+        <div v-for="post in posts.twitter" class="post col-xs-12" v-bind:key="post.id">
+          <div v-if="post.network == 'twitter'" class="card w-100">
+            <img class="card-img-top" :src="post.image" alt="Card image cap">
+            <div class="card-block">
+              <h5 class="card-title">
+                <div class="user-image-container ">
+                  <div class="user-image-container-inner">
+                  </div>
+                  <div class="username-container">
+                    <img
+                      class="user-image rounded-circle"
+                      :src="post.userImage"
+                      >
+                      <span class="name">{{ post.user }}</span>
+                      <span class="username">{{ post.userName }}</span>
+                      <span class="social-icon pull-right"><img :src="post.socialIcon"></span>
+                  </div>
+                </div>
+              </h5>
+              <p class="card-text">
+                <h1 v-if="post.admin" v-html="post.text"></h1>
+                <span v-else v-html="post.text"></span>
+              </p>
+              <p class="card-text">
+                <small>{{ post.createdAt }}</small>
+              </p>
             </div>
-          </h5>
-          <p class="card-text">
-            <h1 v-if="post.admin" v-html="post.text"></h1>
-            <span v-else v-html="post.text"></span>
-          </p>
-          <p class="card-text">
-            <small class="text-muted">{{ post.createdAt }}</small>
-          </p>
+          </div>
         </div>
-      </div>
-      </transition>
+      </transition-group>
     </div>
-  </div>
 
   </div>
 </div>
@@ -180,7 +177,9 @@ export default {
   data: () => ({
     title: window.config.appName,
     loading: true,
-    posts: [
+    posts: {
+      instagram: [],
+      twitter: [],
       /*
       {
         userImage: 'https://pbs.twimg.com/profile_images/961345599948906496/uCw2Ben__normal.jpg',
@@ -216,7 +215,7 @@ export default {
         admin: false,
       },
       */
-    ],
+    },
     errors: [],
     hashtagCatcher: '',
     reloadSec: 30,
@@ -235,24 +234,25 @@ export default {
         let hashtagCatcherArray = [];
         let loadedResponse = {};
         let prevReload = false;
+        let twitterQuery = '';
 
         //url = url.replace(/#/g, '%23');
         const config = axios.get(`/client`)
           .then((response) => {
-            loadedResponse = response;
-            vm.reloadSec = loadedResponse.data.reloadSec;
+            loadedResponse = response.data;
+            vm.reloadSec = loadedResponse.reloadSec;
 
             setTimeout(function () {
               vm.loadData();
             }, vm.reloadSec * 1000);
 
-            if (loadedResponse.data.reload && !prevReload) {
+            if (loadedResponse.reload && !prevReload) {
                 location.reload();
                 prevReload = true;
             }
             prevReload = false;
 
-            if (loadedResponse.data.clear) {
+            if (loadedResponse.clear) {
                 vm.posts = [];
             }
 
@@ -264,87 +264,65 @@ export default {
               return /\S/.test(str);
             });
             //console.debug(hashtagCatcherArray);
-            let twitterQuery = hashtagCatcherArray.join(' OR ');
+            twitterQuery = hashtagCatcherArray.join(' OR ');
 
             //url = url.replace(/#/g, '%23');
-
-            return vm.loadTweets(twitterQuery, loadedResponse.data.randomTwitter)
+            return vm.loadInsta(hashtagCatcherArray[0], loadedResponse.instagram)
           })
           .then((response) => {
-            return vm.loadInsta(hashtagCatcherArray[0], loadedResponse.data.randomInstagram)
+            return vm.loadTweets(twitterQuery, loadedResponse.twitter)
             //console.log('Response', response);
+          })
+          .then((response) => {
+            if (hashtagCatcherArray[1]) {
+              setTimeout(function () {
+                return vm.loadInsta(hashtagCatcherArray[1], loadedResponse.instagram)
+              }, (vm.reloadSec/1.5) * 1000);
+            }
+          }).catch(function (error) {
+            console.log(error);
           });
-
-          /*
-        if(hashtagCatcherArray[1]) {
-          axios.get(`/instagram?q=${hashtagCatcherArray[1]}`)
-          .then(response => {
-            vm.loading = false;
-            // JSON responses are automatically parsed.
-            //this.posts = response.data
-            response.data.forEach(function(post) {
-              vm.posts.unshift(post);
-            });
-          })
-          .catch(e => {
-            vm.loading = false;
-            this.errors.push(e)
-          })
-        }
-
-        if(hashtagCatcherArray[2]) {
-          axios.get(`/instagram?q=${hashtagCatcherArray[1]}`)
-          .then(response => {
-            vm.loading = false;
-            // JSON responses are automatically parsed.
-            //this.posts = response.data
-            response.data.forEach(function(post) {
-              vm.posts.unshift(post);
-            });
-          })
-          .catch(e => {
-            vm.loading = false;
-            this.errors.push(e)
-          })
-        }
-        */
 
       } catch (e) {
         console.error(e); // 💩
       }
     },
-    loadTweets: function(twitterQuery, random) {
+    loadInsta: function(hashtag, response) {
       let vm = this;
-      let query = twitterQuery;
-      if (random) {
-        query += '&random=true';
-      }
-      return axios.get(`/twitter?q=${query}`)
-      .then(response => {
+      let data = response;
+      data.q = hashtag;
+
+      return axios.get(`/instagram`, {
+        params: data
+      }).then(response => {
         vm.loading = false;
+        //console.debug(vm.posts);
         // JSON responses are automatically parsed.
+        //this.posts = response.data
         response.data.forEach(function(post) {
-          vm.posts.unshift(post);
+          vm.posts.instagram.unshift(post);
         });
+
+        //vm.posts.instagram = instaArr;
       })
       .catch(e => {
         vm.loading = false;
         this.errors.push(e)
       })
     },
-    loadInsta: function(hashtag, random) {
+    loadTweets: function(twitterQuery, response) {
       let vm = this;
-      let query = hashtag;
-      if (random) {
-        query += '&random=true';
-      }
-      return axios.get(`/instagram?q=${query}`)
-      .then(response => {
+      let data = response;
+      data.q = twitterQuery;
+
+      return axios.get(`/twitter`, {
+        params: data
+      }).then(response => {
         vm.loading = false;
+        //console.debug(vm.posts);
         // JSON responses are automatically parsed.
-        //this.posts = response.data
         response.data.forEach(function(post) {
-          vm.posts.unshift(post);
+          vm.posts.twitter.unshift(post);
         });
       })
       .catch(e => {
@@ -356,7 +334,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 .top-right {
   position: absolute;
   right: 10px;
@@ -365,6 +343,10 @@ export default {
 
 .title {
   font-size: 85px;
+}
+
+.name {
+  font-weight: bold;
 }
 
 .username {
@@ -389,6 +371,7 @@ export default {
   bottom: 10px;
   left: 10px;
 }
+
 .user-image {
   margin-top: 10px;
   width: 48px;
@@ -396,10 +379,6 @@ export default {
 
 .debug {
   border: 1px solid red;
-}
-
-.main-layout {
-  /*background-image: url("/img/disconakts2018-full-edited-colors.jpg") !important;*/
 }
 
 .post {
@@ -410,8 +389,14 @@ export default {
   object-fit: none; /* Do not scale the image */
   object-position: center; /* Center the image within the element */
   width: 100%;
+  /*max-width: 480px;*/
+  min-height: 200px;
   max-height: 450px;
-  margin-bottom: 1rem;
+  /*margin-bottom: 1rem;*/
+}
+
+.social-icon img {
+  height: 50px;
 }
 
 /*
@@ -428,8 +413,13 @@ export default {
 .fade-enter-active, .fade-leave-active {
   transition: opacity .5s;
 }
+
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;
+}
+
+.flip-list-move {
+  transition: transform 1s;
 }
 
 </style>

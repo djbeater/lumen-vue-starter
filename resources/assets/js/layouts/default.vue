@@ -1,5 +1,5 @@
 <template>
-  <div class="main-layout" style="background: url('/img/disconakts2018-full-edited-colors.jpg') no-repeat center center / cover; height: 100%;">
+  <div class="main-layout">
     <header>
       <div class="row">
         <div class="col-xs-6">
@@ -48,16 +48,22 @@ export default {
 
 <style>
 
-html {
+html, body, #app {
   height: 100%;
 }
 
-body {
+body .main-layout {
+  /*
+  background-image: url("/img/disconakts2018-full-edited-colors.jpg");
+  background-repeat: no-repeat;
+  height: 100vh;
+  width: 100%;
+  background-size: cover;
+  background-position: center;
+  */
+  background: url('/img/disconakts2018-bg.jpg') no-repeat center center / cover;
   height: 100%;
-}
-
-#app {
-  height: 100%;
+  /*position: fixed;*/
 }
 
 .data-catcher {

@@ -12,11 +12,19 @@ class ClientController extends Controller
             'hashtags' => '#disconakts #disconakts2018',
             //'hashtags' => '#liepaja',
             //'hashtags' => '#grobina',
-            'hashtags' => '#spotify',
+            'hashtags' => '#liepaja #riga',
             'reload' => false,
             'clear' => false,
-            'randomInstagram' => true,
-            'randomTwitter' => true,
+            'instagram' => [
+                'random' => true,
+                'limit' => 1,
+            ],
+            'twitter' => [
+                'random' => true,
+                'limit' => 1,
+            ],
+            //'randomInstagram' => true,
+            //'randomTwitter' => true,
             'reloadSec' => 30,
         ]);
 

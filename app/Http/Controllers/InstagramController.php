@@ -25,6 +25,7 @@ class InstagramController extends Controller
 
         Carbon::setLocale('lv');
         $random = $request->input('random');
+        $limit = $request->input('limit');
         //exit();
 
         $ig = new Instagram($debug, $truncatedDebug);
@@ -60,18 +61,20 @@ class InstagramController extends Controller
                 //dd($firstItem);
 
                 $insta = new stdClass;
+                $insta->id = rand();
                 $insta->userImage = $hashtagPost->getUser()->profile_pic_url;
                 $insta->userName = $hashtagPost->getUser()->username;
                 $insta->user = $hashtagPost->getUser()->full_name;
 
                 $text = preg_replace("/\p{L}*?".preg_quote($query)."\p{L}*/ui", "<span class='highlight'>$0</span>", $hashtagPost->getCaption()->text);
+                $text = preg_replace('/(^|\s)@([\w_\.]+)/', '$1<a href="https://instagram.com/$2">@$2</a>', $text);
 
                 $insta->text = $text;
 
                 //$insta->image = $mediaUrl ? $mediaUrl : 'https://picsum.photos/600/600/?random&' . rand(1, 999);
-                $insta->image = $mediaUrl ? $mediaUrl : asset('/img/disconakts2018-cover-full.jpg');
+                $insta->image = $mediaUrl ? $mediaUrl : asset('/img/disconakts2018-avatar-logo.jpg');
 
-                $insta->socialIcon = 'https://www.seeklogo.net/wp-content/uploads/2016/06/Instagram-logo.png';
+                $insta->socialIcon = asset('/img/instagram-logo.png');
                 $insta->createdAt = Carbon::createFromTimestamp($hashtagPost->taken_at)->diffForHumans();
                 $insta->admin = false;
                 $insta->network = 'instagram';
@@ -81,17 +84,18 @@ class InstagramController extends Controller
             }
 
             $instasColl = collect($instas);
+            if ($instasColl->count() < $limit) {
+                $limit = $instasColl->count();
+            }
+
             if (!$random) {
-                $chunk = $instasColl->take(3);
+                $chunk = $instasColl->take($limit);
             }
 
             if ($random) {
-                $random = $instasColl->random(3);
+                $random = $instasColl->random($limit);
                 $chunk = $random->shuffle();
             }
-
-            //$chunk->all();
-            //dd($chunk->all());
 
             return response()->json($chunk->all());
 

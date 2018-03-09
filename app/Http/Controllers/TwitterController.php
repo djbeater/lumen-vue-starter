@@ -26,6 +26,7 @@ class TwitterController extends Controller
 
         Carbon::setLocale('lv');
         $random = $request->input('random');
+        $limit = $request->input('limit');
         //exit();
 
         $query = $request->input('q');
@@ -46,6 +47,7 @@ class TwitterController extends Controller
         $tweets = [];
         foreach($statuses->statuses as $status) {
             $tweet = new stdClass;
+            $tweet->id = rand();
 
             $mediaUrl = null;
             if (isset($status->entities->media)) {
@@ -62,13 +64,14 @@ class TwitterController extends Controller
             if (!empty($hastagArray[2])) {
                 $text = preg_replace("/\p{L}*?".preg_quote($hastagArray[2])."\p{L}*/ui", "<span class='highlight'>$0</span>", $text);
             }
+            $text = preg_replace('/(^|\s)@([\w_\.]+)/', '$1<a href="https://twitter.com/$2">@$2</a>', $text);
 
             $tweet->text = $text;
 
             //$tweet->image = $mediaUrl ? $mediaUrl : 'https://picsum.photos/600/600/?random&' . rand(1, 999);
-            $tweet->image = $mediaUrl ? $mediaUrl : asset('/img/disconakts2018-cover-full.jpg');
+            $tweet->image = $mediaUrl ? $mediaUrl : asset('/img/disconakts2018-avatar-logo.jpg');
 
-            $tweet->socialIcon = 'https://www.seeklogo.net/wp-content/uploads/2015/11/twitter-logo.png';
+            $tweet->socialIcon = asset('/img/twitter-logo.png');
             $tweet->createdAt = Carbon::parse($status->created_at)->diffForHumans();
             $tweet->admin = false;
             $tweet->network = 'twitter';
@@ -79,7 +82,6 @@ class TwitterController extends Controller
 
         $tweetsColl = collect($tweets);
 
-        $limit = 3;
         if ($tweetsColl->count() < $limit) {
             $limit = $tweetsColl->count();
         }
@@ -92,8 +94,6 @@ class TwitterController extends Controller
             $random = $tweetsColl->random($limit);
             $chunk = $random->shuffle();
         }
-        //$chunk->all();
-        //dd($chunk->all());
 
         return response()->json($chunk->all());
     }
