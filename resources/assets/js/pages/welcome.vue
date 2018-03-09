@@ -18,13 +18,14 @@
     </div>
   -->
 
-    <div class="text-center">
+    <!--<div class="text-center">
       <!--
       <div class="title mb-4">
         {{ title }}
       </div>
     -->
 
+<!--
 <div class="row">
   <div v-show="loading" class="col-xs-12"><span class="alert alert-info">Loading...</span></div>
   <div class="card-group">
@@ -59,6 +60,83 @@
     </div>
   </div>
 </div>
+-->
+
+<div class="row">
+  <div class="card-group">
+
+  <div class="col-xs-6 col-sm-6 debugg">
+
+    <div v-for="post in posts" class="post col-xs-12">
+      <transition name="fade">
+      <div v-if="post.network == 'instagram'" class="card w-100">
+        <img class="card-img-top" :src="post.image" alt="Card image cap">
+        <div class="card-block">
+          <h5 class="card-title">
+            <div class="user-image-container ">
+              <div class="user-image-container-inner debugg">
+              </div>
+              <div class="username-container">
+                <img
+                  class="user-image rounded-circle"
+                  :src="post.userImage"
+                  >
+                  <span class="user-name">{{ post.user }}</span>
+                  <span class="username">{{ post.userName }}</span>
+                  <span class="pull-right"><img :src="post.socialIcon" style="height: 50px;"></span>
+              </div>
+            </div>
+          </h5>
+          <p class="card-text">
+            <h1 v-if="post.admin" v-html="post.text"></h1>
+            <span v-else v-html="post.text"></span>
+          </p>
+          <p class="card-text">
+            <small class="text-muted">{{ post.createdAt }}</small>
+          </p>
+        </div>
+      </div>
+    </transition>
+    </div>
+
+  </div>
+
+  <div class="col-xs-6 col-sm-6 debugg">
+    <div v-for="post in posts" class="post col-xs-12">
+      <transition name="fade">
+      <div v-if="post.network == 'twitter'" class="card w-100">
+        <img class="card-img-top" :src="post.image" alt="Card image cap">
+        <div class="card-block">
+          <h5 class="card-title">
+            <div class="user-image-container ">
+              <div class="user-image-container-inner debugg">
+              </div>
+              <div class="username-container">
+                <img
+                  class="user-image rounded-circle"
+                  :src="post.userImage"
+                  >
+                  <span class="user-name">{{ post.user }}</span>
+                  <span class="username">{{ post.userName }}</span>
+                  <span class="pull-right"><img :src="post.socialIcon" style="height: 50px;"></span>
+              </div>
+            </div>
+          </h5>
+          <p class="card-text">
+            <h1 v-if="post.admin" v-html="post.text"></h1>
+            <span v-else v-html="post.text"></span>
+          </p>
+          <p class="card-text">
+            <small class="text-muted">{{ post.createdAt }}</small>
+          </p>
+        </div>
+      </div>
+      </transition>
+    </div>
+  </div>
+
+  </div>
+</div>
 
     <!--
       <div class="links">
@@ -69,13 +147,14 @@
         <a href="https://github.com/laravel/laravel">GitHub</a>
       </div>
     -->
-    </div>
+    <!--</div>-->
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
 import axios from 'axios';
+import $ from 'jquery';
 
 export default {
   layout: 'MainLayout',
@@ -140,14 +219,11 @@ export default {
     ],
     errors: [],
     hashtagCatcher: '',
+    reloadSec: 30,
   }),
   // Fetches posts when the component is created.
   mounted() {
     this.loadData();
-
-    setInterval(function () {
-      this.loadData();
-    }.bind(this), 30000);
   },
   methods: {
     loadData: function () {
@@ -157,26 +233,46 @@ export default {
 
         let hashtagCatcher = '';
         let hashtagCatcherArray = [];
+        let loadedResponse = {};
+        let prevReload = false;
 
         //url = url.replace(/#/g, '%23');
         const config = axios.get(`/client`)
           .then((response) => {
+            loadedResponse = response;
+            vm.reloadSec = loadedResponse.data.reloadSec;
+
+            setTimeout(function () {
+              vm.loadData();
+            }, vm.reloadSec * 1000);
+
+            if (loadedResponse.data.reload && !prevReload) {
+                location.reload();
+                prevReload = true;
+            }
+            prevReload = false;
+
+            if (loadedResponse.data.clear) {
+                vm.posts = [];
+            }
+
+            $('.data-catcher').html(response.data.hashtags);
             hashtagCatcher = response.data.hashtags.replace(/#/g, '');
 
             hashtagCatcherArray = hashtagCatcher.split(/(\s+)/);
             hashtagCatcherArray = hashtagCatcherArray.filter(function(str) {
               return /\S/.test(str);
             });
-            console.debug(hashtagCatcherArray);
+            //console.debug(hashtagCatcherArray);
             let twitterQuery = hashtagCatcherArray.join(' OR ');
 
             //url = url.replace(/#/g, '%23');
 
-            return vm.loadTweets(twitterQuery)
+            return vm.loadTweets(twitterQuery, loadedResponse.data.randomTwitter)
           })
           .then((response) => {
-            return vm.loadInsta(hashtagCatcherArray[0])
-            console.log('Response', response);
+            return vm.loadInsta(hashtagCatcherArray[0], loadedResponse.data.randomInstagram)
+            //console.log('Response', response);
           });
 
           /*
@@ -217,9 +313,13 @@ export default {
         console.error(e); // 💩
       }
     },
-    loadTweets: function(twitterQuery) {
+    loadTweets: function(twitterQuery, random) {
       let vm = this;
-      return axios.get(`/twitter?q=${twitterQuery}`)
+      let query = twitterQuery;
+      if (random) {
+        query += '&random=true';
+      }
+      return axios.get(`/twitter?q=${query}`)
       .then(response => {
         vm.loading = false;
         // JSON responses are automatically parsed.
@@ -232,9 +332,13 @@ export default {
         this.errors.push(e)
       })
     },
-    loadInsta: function(hashtag) {
+    loadInsta: function(hashtag, random) {
       let vm = this;
-      return axios.get(`/instagram?q=${hashtag}`)
+      let query = hashtag;
+      if (random) {
+        query += '&random=true';
+      }
+      return axios.get(`/instagram?q=${query}`)
       .then(response => {
         vm.loading = false;
         // JSON responses are automatically parsed.
@@ -274,7 +378,7 @@ export default {
 
 .user-image-container-inner {
   position: absolute;
-  background: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.65);
   width: 100%;
   height: 60px;
   top: -65px;
@@ -297,4 +401,35 @@ export default {
 .main-layout {
   /*background-image: url("/img/disconakts2018-full-edited-colors.jpg") !important;*/
 }
+
+.post {
+  margin-bottom: 10px;
+}
+
+.post img.card-img-top {
+  object-fit: none; /* Do not scale the image */
+  object-position: center; /* Center the image within the element */
+  width: 100%;
+  max-height: 450px;
+  margin-bottom: 1rem;
+}
+
+/*
+.card-columns {
+  @include media-breakpoint-only(lg) {
+    column-count: 3;
+  }
+  @include media-breakpoint-only(xl) {
+    column-count: 2;
+  }
+}
+*/
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
+}
+
 </style>

@@ -3,20 +3,21 @@
     <header>
       <div class="row">
         <div class="col-xs-6">
-          <img src="/img/disconakts2018-header-transparent.png" style="height: 150px;">
+          <img src="/img/disconakts2018-header-transparent.png" class="ml-3 header-logo">
         </div>
         <div class="col-xs-6">
           <div class="pull-right mt-4 ml-4">
-            <div><h2>Sekojošas mirkļbirkas tiks atspoguļotas</h2></div>
+            <div class="taken-hashtags">Tiek rādītas mirkļbirkas:</div>
             <div class="data-catcher"></div>
           </div>
         </div>
-
+        <!--
         <div class="col-xs-12">
           <div class="form-group">
             <input type="text" class="form-control">
           </div>
         </div>
+        -->
       </div>
     </header>
     <div class="container-fluid">
@@ -68,6 +69,23 @@ body {
 .highlight {
   color: blue;
   font-weight: bold;
+}
+
+.taken-hashtags {
+  font-size: 30px;
+  font-weight: bold;
+  color: #fff;
+}
+
+.data-catcher {
+  font-size: 40px;
+  font-weight: bold;
+  color: #fff;
+}
+
+.header-logo {
+  height: 150px;
+  margin-top: -10px;
 }
 
 </style>

@@ -24,14 +24,22 @@ class TwitterController extends Controller
         );
         //$content = $connection->get("account/verify_credentials");
 
-        $query = [
-          "q" => $request->input('q'),
-          "result_type" => "recent",
-          "include_entities" => "true"
-        ];
-        $statuses = $connection->get("search/tweets", $query);
-    	  //$data = Twitter::getUserTimeline(['count' => 10, 'format' => 'array']);
+        Carbon::setLocale('lv');
+        $random = $request->input('random');
+        //exit();
 
+        $query = $request->input('q');
+        $hastagArray = explode(' ', str_replace('OR', '', $query));
+        //print_r($hastagArray);
+        //exit;
+
+        $queryArray = [
+          "q" => $query,
+          "result_type" => $random ? "mixed" : "recent",
+          "include_entities" => $random ? "true" : "false",
+        ];
+        $statuses = $connection->get("search/tweets", $queryArray);
+    	  //$data = Twitter::getUserTimeline(['count' => 10, 'format' => 'array']);
         //print_r($statuses);
         //exit;
 
@@ -50,20 +58,40 @@ class TwitterController extends Controller
             $tweet->userName = $status->user->screen_name;
             $tweet->user = $status->user->name;
 
-            $text = preg_replace("/\p{L}*?".preg_quote('disconakts')."\p{L}*/ui", "<span class='highlight'>$0</span>", $status->text);
+            $text = preg_replace("/\p{L}*?".preg_quote($hastagArray[0])."\p{L}*/ui", "<span class='highlight'>$0</span>", $status->text);
+            if (!empty($hastagArray[2])) {
+                $text = preg_replace("/\p{L}*?".preg_quote($hastagArray[2])."\p{L}*/ui", "<span class='highlight'>$0</span>", $text);
+            }
 
             $tweet->text = $text;
-            $tweet->image = $mediaUrl ? $mediaUrl : 'https://picsum.photos/600/600/?random&' . rand(1, 999);
+
+            //$tweet->image = $mediaUrl ? $mediaUrl : 'https://picsum.photos/600/600/?random&' . rand(1, 999);
+            $tweet->image = $mediaUrl ? $mediaUrl : asset('/img/disconakts2018-cover-full.jpg');
+
             $tweet->socialIcon = 'https://www.seeklogo.net/wp-content/uploads/2015/11/twitter-logo.png';
             $tweet->createdAt = Carbon::parse($status->created_at)->diffForHumans();
             $tweet->admin = false;
+            $tweet->network = 'twitter';
 
             $tweets[] = $tweet;
             $tweet = null;
         }
 
         $tweetsColl = collect($tweets);
-        $chunk = $tweetsColl->take(3);
+
+        $limit = 3;
+        if ($tweetsColl->count() < $limit) {
+            $limit = $tweetsColl->count();
+        }
+
+        if (!$random) {
+            $chunk = $tweetsColl->take($limit);
+        }
+
+        if ($random) {
+            $random = $tweetsColl->random($limit);
+            $chunk = $random->shuffle();
+        }
         //$chunk->all();
         //dd($chunk->all());
 

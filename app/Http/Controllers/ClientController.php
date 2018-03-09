@@ -10,8 +10,14 @@ class ClientController extends Controller
     {
         $response = collect([
             'hashtags' => '#disconakts #disconakts2018',
-            'reload' => 'false',
-            'clear' => 'fasle',
+            //'hashtags' => '#liepaja',
+            //'hashtags' => '#grobina',
+            'hashtags' => '#spotify',
+            'reload' => false,
+            'clear' => false,
+            'randomInstagram' => true,
+            'randomTwitter' => true,
+            'reloadSec' => 30,
         ]);
 
         return response()->json($response);
